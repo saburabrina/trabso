@@ -1,5 +1,4 @@
 var processos = [];
-var qtdprocessos = 0;
 var pids = -1;
 var tempo = 0;
 
@@ -8,19 +7,18 @@ var Processo = function (pid, tempochegada, tempoexecucao, deadline) {
 	this.tempochegada = tempochegada,
 	this.tempoexecucao = tempoexecucao,
 	this.deadline = deadline
-	this.turnaround = tempoexecucao;
+	this.turnaround = 0;
 };
 
 function criarprocesso(){
-	tempochegada = document.getElementById('chegada').value;
-	tempoexecucao = document.getElementById('execucao').value;
-	deadline = document.getElementById('deadline').value;
+	tempochegada = document.getElementById('chegada').value - 0;
+	tempoexecucao = document.getElementById('execucao').value - 0;
+	deadline = document.getElementById('deadline').value - 0;
 	pids += 1;
 
 	var processo = new Processo(pids, tempochegada, tempoexecucao, deadline);
 	processos.push(processo);
 	console.log(processos);
-	qtdprocessos++;
 }
 
 function SJF(){
@@ -31,7 +29,7 @@ function SJF(){
 
 	tempo += processos[0].tempoexecucao;
 
-	for (var i = 1; i < qtdprocessos; i++) {
+	for (var i = 1; i < processos.length; i++) {
 		processos[i].turnaround += (tempo - processos[i].tempochegada);
 		tempo += processos[i].tempoexecucao;
 	}
@@ -45,7 +43,7 @@ function EDF(){
 
 	tempo += processos[0].tempoexecucao;
 
-	for (var i = 1; i < qtdprocessos; i++) {
+	for (var i = 1; i < processos.length; i++) {
 		processos[i].turnaround += (tempo - processos[i].tempochegada);
 		tempo += processos[i].tempoexecucao;
 	}
@@ -59,42 +57,111 @@ function FIFO(){
 	
 	tempo += processos[0].tempoexecucao;
 
-	for (var i = 1; i < qtdprocessos; i++) {
+	for (var i = 1; i < processos.length; i++) {
 		processos[i].turnaround += (tempo - processos[i].tempochegada);
 		tempo += processos[i].tempoexecucao;
 	}
 }
 
 function RR(){
-	FIFO();
-	quantum = document.getElementById('quantum').value;
-	final = 0;
+	processos.sort(function(a, b){ // fifo
+		return a.tempochegada - b.tempochegada;
+	})
 
-	for (var i = 0; i < qtdprocessos; i++) {
-		if(processos[i].tempoexecucao!=0){
-			if (processos[i].tempoexecucao>=quantum) {
-				processos[i].tempoexecucao-=quantum;
-				if (processos[i].tempoexecucao==0) {
-					final++;
+	quantum = document.getElementById('quantum').value - 0;
+	sobrecarga = document.getElementById('sobrecarga').value - 0;
+	ta = 0;
+	qtdprocessos = processos.length;
+
+	while(processos.length > 0){
+		console.log("tempo inicial", tempo);
+		if(processos[0].tempochegada <= tempo){
+			if (processos[0].tempoexecucao >= quantum) {
+				processos[0].tempoexecucao -= quantum;
+				tempo+=quantum;
+
+
+				console.log("tempo + quantum", tempo);
+				if (processos[0].tempoexecucao!=0) {
+					processos.push(processos[0]);
+					tempo += sobrecarga;
 				}
+				else {
+					console.log("tempo inicial", tempo);	
+					processos[0].turnaround += tempo - processos[0].tempochegada;
+					document.getElementById('tabela').innerHTML += '<tr><td>' + processos[0].pid + '</td><td>' + processos[0].turnaround + '</td></tr>';
+					ta += processos[0].turnaround;
+				}
+				processos.splice(0, 1);
 			}
 			else {
-				processos[i].tempoexecucao=0; 
-				final++;
+				tempo += processos[0].tempoexecucao;
+				processos[0].turnaround += tempo - processos[0].tempochegada;
+				document.getElementById('tabela').innerHTML += '<tr><td>' + processos[0].pid + '</td><td>' + processos[0].turnaround + '</td></tr>';
+				ta += processos[0].turnaround;
+				processos.splice(0, 1);
 			}
+		}
+		else{
+			tempo++;
+		}
+	}	
+}
 
-			document.getElementById('cpu').innerHTML += 'Processo na CPU : ' + processos[i].pid + '<br>';
-			document.getElementById('filaprontos').innerHTML += 'Fila Prontos : ';
-			for(var j=i+1; j<qtdprocessos; j++){
-				document.getElementById('filaprontos').innerHTML += '' + processos[j].pid + ', ';
+/*function RR(){
+	processos.sort(function(a, b){ // fifo
+		return a.tempochegada - b.tempochegada;
+	})
+
+	quantum = document.getElementById('quantum').value - 0;
+	sobrecarga = document.getElementById('sobrecarga').value - 0;
+	final = 0; // quantidade de processos que já terminaram de executar
+
+	for (var i = 0; i < processos.length; i++) {
+		if (processos[i].tempochegada<=tempo) { // se o proximo processo já chegou
+
+			// Escrever na tabela inicios
+			document.getElementById('tabela').innerHTML += '<tr><td>' + tempo + '</td><td>' + processos[i].pid + '</td><td>' + processos[i].turnaround + '</td><td>';
+			for(var j=i+1; j<processos.length; j++){
+				if(processos[i].tempoexecucao!=0 && processos[i].tempochegada<=tempo){
+					document.getElementById('tabela').innerHTML += processos[j].pid + ' ';
+				}
 			}
 			for(var j=0; j<i; j++){
-				document.getElementById('filaprontos').innerHTML += '' + processos[j].pid + ', ';
+				if(processos[i].tempoexecucao!=0 && processos[i].tempochegada<=tempo){
+					document.getElementById('tabela').innerHTML += processos[j].pid + ' ';
+				}
 			}
-			document.getElementById('filaprontos').innerHTML += '<br>';
+			document.getElementById('tabela').innerHTML += '</td></tr>';
+			// Escrever na tabela finals
+
+			if(processos[i].tempoexecucao!=0){ // Se o processo não terminou
+				if (processos[i].tempoexecucao>=quantum) { //...//
+					processos[i].tempoexecucao-=quantum;
+
+					if (processos[i].tempoexecucao==0) {
+						final++;
+					}										// soma ao tempo o valo do quantum
+															// soma do quantum ao turnaround do processo
+					tempo+=quantum;							// subtracao do tempo de execucao do processo, o valor do quantum
+					processos[i].turnaround += quantum;
+				}
+				else {
+					tempo+=processos[i].tempoexecucao;
+					processos[i].turnaround+=processos[i].tempoexecucao;
+					processos[i].tempoexecucao=0; 
+					final++;
+				}											//...//
+			}
+
+			if (final==processos.length) {break;} // se todos os processos terminaram, para
+			else{
+				tempo+=sobrecarga;
+				if(i==processos.length-1){i=0;}
+			}
 		}
-		
-		if (final==qtdprocessos) {break;}
-		else if(i==qtdprocessos-1){i=0;}
+		else{
+			tempo++;
+		}
 	}
-}
+}*/

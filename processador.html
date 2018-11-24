@@ -7,7 +7,7 @@
 		<meta author="Lara && Sabrina">
 		<title>LSSim</title>
 
-		<!--<link rel="stylesheet" type="text/css" href="processo.css">-->
+		<link rel="stylesheet" type="text/css" href="processo.css">
 	    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	</head>
@@ -20,24 +20,24 @@
 		<script type="text/javascript" src="processo.js"></script>
 		<div class="container">
 			<div class="row">
-				<div  class="col-6">
+				<div  class="col-3">
 					<form>
 						<h5>Formulário para Processo</h5>
 						<div class="form-group">
 							<label>Tempo de Chegada</label>
-							<input class="form-control" type="number" id="chegada" name="chegada" min="0" value="0">
+							<input class="form-control" type="number" id="chegada" name="chegada" min="0" value=0>
 						</div>
 						<div class="form-group">
 							<label>Tempo de Execução</label>
-							<input class="form-control" type="number" id="execucao" name="execucao" min="0" value="1">
+							<input class="form-control" type="number" id="execucao" name="execucao" min="1" value=1>
 						</div>
 						<div class="form-group">
 							<label>Deadline</label>
-							<input class="form-control" type="number" id="deadline" name="deadline" min="1" value="1">
+							<input class="form-control" type="number" id="deadline" name="deadline" min="1" value=1>
 						</div>
 						<div class="form-group">
 							<label>Prioridade</label>
-							<input class="form-control" type="number" id="prioridade" name="prioridade" min="1" value="1">
+							<input class="form-control" type="number" id="prioridade" name="prioridade" min="1" value=1>
 						</div>
 					</form>
 
@@ -50,14 +50,13 @@
 					</div>
 				</div>
 
-				<div class="col-3">
-					<div id="cpu">
-						
-					</div>
-
-					<div id="filaprontos">
-						
-					</div>
+				<div class="col-8">
+					<table id="tabela">
+						<tr>
+							<th><strong>PID</strong></th>
+							<th><strong>TURNAROUND</strong></th>
+						</tr>
+					</table>
 				</div>
 			</div>
 		</div>
