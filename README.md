@@ -1,0 +1,2 @@
+# trabso
+Simulador SO
