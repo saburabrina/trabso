@@ -30,8 +30,13 @@ function SJF(){
 
 function EDF(){
 	processos.sort(function(a, b){
+		if(a.tempochegada!=b.tempochegada){
+			return a.tempochegada - b.tempochegada;
+		}
 		return a.deadline - b.deadline;
 	})
+
+	console.log(processos);
 
 	preempcao();
 }
