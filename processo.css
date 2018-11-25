@@ -1,3 +1,25 @@
 table, th, td {
     border: 1px solid black;
 }
+
+div.barralateral {
+	width:18%; 
+	padding: 1em;
+	background-color: #ccf5d6;
+}
+
+.w3-container {
+	margin-left: 18%;
+}
+
+button {
+	background-color: #66CDAA;
+	color: #F0F8FF;
+	margin-bottom: 45em; 
+
+}
+
+button:hover {
+	background-color: white;
+	color: #66CDAA;
+}

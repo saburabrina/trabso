@@ -1,6 +1,7 @@
 var processos = [];
 var pids = -1;
 var tempo = 0;
+turnaroundmedio = 0;
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline) {
 	this.pid = pid,
@@ -21,11 +22,24 @@ function criarprocesso(){
 	console.log(processos);
 }
 
-function SJF(){
-	processos.sort(function(a, b){
+function SJF(){processos.sort(function(a, b){
+		if(a.tempochegada!=b.tempochegada){
+			return a.tempochegada - b.tempochegada;
+		}
 		return a.tempoexecucao - b.tempoexecucao;
 	})
+
+	tempo = processos[0].tempochegada;
+	for (var i = 0; i < processos.length; i++) {
+		tempo += processos[i].tempoexecucao;
+		processos[i].turnaround = tempo - processos[i].tempochegada;
+		turnaroundmedio += processos[i].turnaround;
+		console.log(processos[i].turnaround);
+	}
+	turnaroundmedio /= processos.length;
+	console.log(turnaroundmedio);
 	console.log(processos);
+
 }
 
 function EDF(){
@@ -45,6 +59,15 @@ function FIFO(){
 	processos.sort(function(a, b){
 		return a.tempochegada - b.tempochegada;
 	})
+	tempo = processos[0].tempochegada;
+	for (var i = 0; i < processos.length; i++) {
+		tempo += processos[i].tempoexecucao;
+		processos[i].turnaround = tempo - processos[i].tempochegada;
+		turnaroundmedio += processos[i].turnaround;
+		console.log(processos[i].turnaround);
+	}
+	turnaroundmedio /= processos.length;
+	console.log(turnaroundmedio);
 	console.log(processos);
 }
 
@@ -100,10 +123,11 @@ function preempcao(){
 			tempo++;
 		}
 	}
+	ta /= processos.length;
+	turnaroundmedio = ta;
 
 
 	function atualizaprontos(){
-		console.log(aux, " aux e tempo ", tempo);
 		for (var i = aux; i < processos.length; i++) {
 			if(processos[i].tempochegada <= tempo) {
 				prontos.push(processos[i]);

@@ -10,70 +10,170 @@
 		<link rel="stylesheet" type="text/css" href="processo.css">
 	    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 	</head>
 	<body>
+		<style type="text/css">
+			table, th, td {
+			    border: 1px solid black;
+			}
+
+			.side-nav {
+				width:20%; 
+				height: 100%;
+				position: fixed;
+				padding-right: 2em;
+				padding-left: 1em;
+				padding-top: 1em;
+				padding-bottom: 1em;
+				background-color: #ccf5d6;
+				z-index: 1;
+				top: 0;
+				left: 0;
+			}
+
+			.main {
+				margin-left: 20%;
+			}
+
+			button {
+				background-color: #66CDAA;
+				color: #F0F8FF;
+				margin-bottom: 0.5em; 
+
+			}
+
+			button:hover {
+				background-color: white;
+				color: #66CDAA;
+				outline: 1px solid #66CDAA;
+			}
+
+			.modal-content {
+				padding: 1.5em;
+				border-radius: 15px;
+			}
+
+			.modal-title, strong {
+				color: #696969;
+			}
+
+			#infoescalonamento {
+				 color: #008B8B;
+			}
+
+		</style>
+
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
    		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
 		<script type="text/javascript" src="processo.js"></script>
-		<div class="container">
-			<div class="row">
-				<div  class="col-3">
-					<form>
-						<h5>Formulário para Processo</h5>
-						<div class="form-group">
-							<label>Tempo de Chegada</label>
-							<input class="form-control" type="number" id="chegada" name="chegada" min="0" value=0>
-						</div>
-						<div class="form-group">
-							<label>Tempo de Execução</label>
-							<input class="form-control" type="number" id="execucao" name="execucao" min="1" value=1>
-						</div>
-						<div class="form-group">
-							<label>Deadline</label>
-							<input class="form-control" type="number" id="deadline" name="deadline" min="1" value=1>
-						</div>
-						<div class="form-group">
-							<label>Prioridade</label>
-							<input class="form-control" type="number" id="prioridade" name="prioridade" min="1" value=1>
-						</div>
-					</form>
 
-					<div class="text-center justify-content-center">
-						<button class="btn" onclick="criarprocesso()">Criar Processo</button>
-						<button class="btn" onclick="SJF()">SJF</button>
-						<button class="btn" onclick="EDF()">EDF</button>
-						<button class="btn" onclick="FIFO()">FIFO</button>
-						<button class="btn" onclick="RR()">RoundRobin</button>
+		<div class="side-nav"> 
+			<div class="container">
+				<div class="row">
+					<div class="text-center justify-content-center col-4" style="font-size: 0.7em;">
+						<strong> Tempo </strong>
+						<p id="infotempo">0</p>
+					</div>
+					<div class="text-center justify-content-center col-4" style="font-size: 0.7em;">
+						<strong> Quantum </strong>
+						<p id="infoquantum">1</p>
+					</div>
+					<div class="text-center justify-content-center col-4" style="font-size: 0.7em;">
+						<strong> Sobrecarga </strong>
+						<p id="infosobrecarga">1</p>
 					</div>
 				</div>
+				<div class="row text-center justify-content-center">
+					<strong class="px-2" style="font-size: 1em;">Tipo de Escalonamento </strong>
+					<p id="infoescalonamento"><strong style="font-size: 2em;  color: #008B8B;">SJF</strong></p>
+				</div>
+			</div>
+			<div class="text-center justify-content-center">
+				<button class="btn" data-toggle="modal" data-target="#criacaoprocesso" style="font-size: 0.8em;">Criar Processos</button>
+				<button class="btn" data-toggle="modal" data-target="#configuracoesprocessador" style="font-size: 0.8em;">Configurações de Processador</button>
+			</div>
 
-				<div class="col-8">
-					<table id="tabela">
-						<tr>
-							<th><strong>PID</strong></th>
-							<th><strong>TURNAROUND</strong></th>
-						</tr>
-					</table>
+
+		</div>
+		<div class="main">
+			
+		</div>
+
+		<div  class="modal" id="criacaoprocesso">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					
+					<div class="modal-header text-center justify-content-center">
+						<h4 class="modal-title"><strong>Criar Processos</strong></h4>
+						<button class="close" data-dismiss="modal">&times</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label>Tempo de Chegada</label>
+								<input class="form-control" type="number" id="chegada" name="chegada" min="0" value=0>
+							</div>
+							<div class="form-group">
+								<label>Tempo de Execução</label>
+								<input class="form-control" type="number" id="execucao" name="execucao" min="1" value=1>
+							</div>
+							<div class="form-group">
+								<label>Deadline</label>
+								<input class="form-control" type="number" id="deadline" name="deadline" min="1" value=1>
+							</div>
+							<div class="form-group">
+								<label>Prioridade</label>
+								<input class="form-control" type="number" id="prioridade" name="prioridade" min="1" value=1>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer text-center justify-content-center">
+						<button class="btn" onclick="criarprocesso()">Criar Processo</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="col-2">
-			<form>
-				<h5>Formulário do Processador</h5>
-				<div class="form-group">
-					<label>Quantum</label>
-					<input class="form-control" onkeyup="" type="number" id="quantum" name="quantum" min="1" value="1">
-				</div>
+		<div  class="modal" id="configuracoesprocessador">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header text-center justify-content-center">
+						<h4 class="modal-title"><strong>Configurações do Processador</strong></h4>
+						<button class="close" data-dismiss="modal">&times</button>
+					</div>		
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label>Quantum</label>
+								<input class="form-control" onkeyup="" type="number" id="quantum" name="quantum" min="1" value="1">
+							</div>
 
-				<div class="form-group">
-					<label>Sobrecarga</label>
-					<input class="form-control" onkeyup="" type="number" id="sobrecarga" min="1" name="sobrecarga" value="1">
+							<div class="form-group">
+								<label>Sobrecarga</label>
+								<input class="form-control" onkeyup="" type="number" id="sobrecarga" min="1" name="sobrecarga" value="1">
+							</div>	
+						</form>
+					</div>
+					<div class="modal-footer text-center justify-content-center">
+						<div>
+							<label>Selecione o tipo de escalonamento: </label>
+						</div>
+						<div>
+							<button class="btn" onclick="SJF()">SJF</button>
+							<button class="btn" onclick="EDF()">EDF</button>
+							<button class="btn" onclick="FIFO()">FIFO</button>
+							<button class="btn" onclick="RR()">RoundRobin</button>
+						</div>
+					</div>
+					<div class="text-center justify-content-center">
+						<button class="btn edit" style="background-color: #778899;">Salvar</button>
+					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 	</body>
 </html>
