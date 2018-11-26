@@ -166,75 +166,6 @@ function preempcao(){
 	}	
 }
 
-/* Coloca processo que acabou de executar antes do chaveamento, na fila de prontos
-
-function RR(){
-	processos.sort(function(a, b){ // fifo
-		return a.tempochegada - b.tempochegada;
-	})
-
-	quantum = document.getElementById('quantum').value - 0;
-	sobrecarga = document.getElementById('sobrecarga').value - 0;
-	ta = 0;
-	qtdterminados = 0;
-	prontos = [];
-	aux = 0;;
-
-	// Enquanto os processos não forem terminados o vetor de prontos será atualizado;
-	while(processos.length > qtdterminados){
-		atualizaprontos();
-		if(prontos.length > 0){ 
-			// console.log("O processo na frente da lista é o processo ", prontos[0].pid, " e o tempo atual é ", tempo);
-
-			if (prontos[0].tempoexecucao > quantum) { // se o processo for executar e voltar pra fila de prontos
-				
-				tempo += quantum;
-				tempo += sobrecarga;
-				// atualizaprontos();
-				
-				prontos[0].tempoexecucao -= quantum; // atualizar o tempo de execucao do processo e colocar ele de volta na fila
-				prontos.push(prontos[0]);
-				prontos.splice(0, 1);
-				console.log("O processo ", prontos[prontos.length-1].pid, " agora ocupa a posição ", prontos.length-1, " da fila");
-			}
-			else {  // se o processo for executar e parar
-				tempo += prontos[0].tempoexecucao;
-				// atualizaprontos();
-
-				prontos[0].turnaround += tempo - prontos[0].tempochegada;
-				console.log("O processo ", prontos[0].pid, " terminou com turnaround de ", prontos[0].turnaround, " e agora vai sair da fila no tempo " + tempo);
-
-				document.getElementById('tabela').innerHTML += '<tr><td>' + prontos[0].pid + '</td><td>' + prontos[0].turnaround + '</td></tr>';
-				ta += prontos[0].turnaround;
-				prontos.splice(0, 1);
-				qtdterminados++;
-			}
-
-		}
-		else{
-			tempo++;
-		}
-	}
-
-
-	// Funcao que atualia o vetor de prontos verificando se o tempo de chegada de cada processo é menor que o tempo em execução no programa;
-	function atualizaprontos(){
-		for (var i = aux; i < processos.length; i++) {
-			if(processos[i].tempochegada <= tempo) {
-				prontos.push(processos[i]);
-			} else {
-				break;
-			}
-			console.log('i ', i);
-			console.log(prontos);
-
-		}
-		aux = i;
-		console.log('Aux', aux);
-	}
-}
-*/
-
 function savechanges(){
 	document.getElementById('infoquantum').innerHTML = document.getElementById('quantum').value;
 	document.getElementById('infosobrecarga').innerHTML = document.getElementById('sobrecarga').value;
@@ -339,44 +270,115 @@ function rodarescalonamento(){
 	else {
 		if (escalonamento == 1) {
 			SJF();
+			tempo = 0;
 			np();
 		}
 
 		else if (escalonamento == 2) {
+			EDF();
 
 		}
 		else if (escalonamento == 3) {
 			FIFO();
+			tempo = 0;
 			np();
 		}
 
 		function np(){
 			aux = 0;
 			prontos = [];
-			setInterval(nptimer, 1000);	
+			setInterval(function (){
+				for (var i = aux; i < processos.length; i++) {
+					if(processos[i].tempochegada = tempo){
+						prontos.push(processos[i]);
+					}
+				}
+				aux = i;
+				if(prontos.length > 0){
+					document.getElementById('tdcpu').innerHTML = prontos[0].pid;
+					document.getElementById('tdfilaprontos').innerHTML = '';
+					for (var i = 1; i < prontos.length; i++) {
+						document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
+					}
+					prontos.splice(0, 1);
+				}
+				else{
+					document.getElementById('tdcpu').innerHTML = '';
+					document.getElementById('tdtam').innerHTML = turnaroundmedio;
+				}
+				console.log(tempo);
+				tempo++; 
+				document.getElementById('infotempo').innerHTML = tempo;
+			}, 1000);	
 		}	
 	}
 }
 
-function nptimer(){
-	for (var i = aux; i < processos.length; i++) {
-		if(processos[i].tempochegada = tempo){
-			prontos.push(processos[i]);
+/* Coloca processo que acabou de executar antes do chaveamento, na fila de prontos
+
+function RR(){
+	processos.sort(function(a, b){ // fifo
+		return a.tempochegada - b.tempochegada;
+	})
+
+	quantum = document.getElementById('quantum').value - 0;
+	sobrecarga = document.getElementById('sobrecarga').value - 0;
+	ta = 0;
+	qtdterminados = 0;
+	prontos = [];
+	aux = 0;;
+
+	// Enquanto os processos não forem terminados o vetor de prontos será atualizado;
+	while(processos.length > qtdterminados){
+		atualizaprontos();
+		if(prontos.length > 0){ 
+			// console.log("O processo na frente da lista é o processo ", prontos[0].pid, " e o tempo atual é ", tempo);
+
+			if (prontos[0].tempoexecucao > quantum) { // se o processo for executar e voltar pra fila de prontos
+				
+				tempo += quantum;
+				tempo += sobrecarga;
+				// atualizaprontos();
+				
+				prontos[0].tempoexecucao -= quantum; // atualizar o tempo de execucao do processo e colocar ele de volta na fila
+				prontos.push(prontos[0]);
+				prontos.splice(0, 1);
+				console.log("O processo ", prontos[prontos.length-1].pid, " agora ocupa a posição ", prontos.length-1, " da fila");
+			}
+			else {  // se o processo for executar e parar
+				tempo += prontos[0].tempoexecucao;
+				// atualizaprontos();
+
+				prontos[0].turnaround += tempo - prontos[0].tempochegada;
+				console.log("O processo ", prontos[0].pid, " terminou com turnaround de ", prontos[0].turnaround, " e agora vai sair da fila no tempo " + tempo);
+
+				document.getElementById('tabela').innerHTML += '<tr><td>' + prontos[0].pid + '</td><td>' + prontos[0].turnaround + '</td></tr>';
+				ta += prontos[0].turnaround;
+				prontos.splice(0, 1);
+				qtdterminados++;
+			}
+
+		}
+		else{
+			tempo++;
 		}
 	}
-	aux = i;
-	if(prontos.length > 0){
-		document.getElementById('tdcpu').innerHTML = prontos[0].pid;
-		document.getElementById('tdfilaprontos').innerHTML = '';
-		for (var i = 1; i < prontos.length; i++) {
-			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
+
+
+	// Funcao que atualia o vetor de prontos verificando se o tempo de chegada de cada processo é menor que o tempo em execução no programa;
+	function atualizaprontos(){
+		for (var i = aux; i < processos.length; i++) {
+			if(processos[i].tempochegada <= tempo) {
+				prontos.push(processos[i]);
+			} else {
+				break;
+			}
+			console.log('i ', i);
+			console.log(prontos);
+
 		}
-		prontos.splice(0, 1);
+		aux = i;
+		console.log('Aux', aux);
 	}
-	else{
-		document.getElementById('tdcpu').innerHTML = '';
-		document.getElementById('tdtam').innerHTML = turnaroundmedio;
-	}
-	tempo++; 
-	document.getElementById('infotempo').innerHTML = tempo;
 }
+*/
