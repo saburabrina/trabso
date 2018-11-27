@@ -70,6 +70,11 @@
     			border-radius: 12px;
 			}
 
+			#tabelap {
+				height: 18em;
+				overflow-y: auto;
+			}
+
 		</style>
 
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -123,35 +128,36 @@
 		<div class="main">
 			<div class="container">
 				<div class="row">
-					<div class="card p-1 col-5">
-						<table class="card-body" style="background-color:  #F0F8FF;">
-							<tr>
-								<th><strong style="margin: 1em;">CPU</strong></th>
-								<th><strong style="margin: 1em;">Turnaround médio</strong></th>
-								<th><strong style="margin: 1em;">Fila de prontos</strong></th>
-							</tr>
-							<tr>
-								<td id="tdcpu"></td>
-								<td id="tdtam"></td>
-								<td id="tdfilaprontos"></td>
-							</tr>
-						</table>
-					</div>
-
-					<div class="card p-1 col-5">
-						<table class="card-body" style="background-color:  #F0F8FF;">
-							<thead>
+					<div class=" p-1 col-5">
+						<div id="tabelaescalonamento" class="card">
+							<table class="card-body" style="background-color:  #F0F8FF;">
 								<tr>
-									<th id="tdpid"><strong style="margin: 1em;">PID</strong></th>
-									<th id="tdtc"><strong style="margin: 1em;">TC</strong></th>
-									<th id="tdte"><strong style="margin: 1em;">TE</strong></th>
-									<th id="tdd"><strong style="margin: 1em;">Deadline</strong></th>
-									<th id="tdp"><strong style="margin: 1em;">Prioridade</strong></th>
+									<th><strong style="margin: 1em;">CPU</strong></th>
+									<th><strong style="margin: 1em;">Turnaround médio</strong></th>
+									<th><strong style="margin: 1em;">Fila de prontos</strong></th>
 								</tr>
-							</thead>
-							<tbody id="tabelaprocessos">
-							</tbody>
-						</table>
+								<tr>
+									<td id="tdcpu"></td>
+									<td id="tdtam"></td>
+									<td id="tdfilaprontos"></td>
+								</tr>
+							</table>
+						</div>
+						<div id="tabelap" class="card">
+							<table class="card-body" style="background-color:  #F0F8FF;">
+								<thead>
+									<tr>
+										<th id="tdpid"><strong style="margin: 1em;">PID</strong></th>
+										<th id="tdtc"><strong style="margin: 1em;">TC</strong></th>
+										<th id="tdte"><strong style="margin: 1em;">TE</strong></th>
+										<th id="tdd"><strong style="margin: 1em;">Deadline</strong></th>
+										<th id="tdp"><strong style="margin: 1em;">Prioridade</strong></th>
+									</tr>
+								</thead>
+								<tbody id="tabelaprocessos">
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -202,11 +208,6 @@
 					</div>		
 					<div class="modal-body">
 						<form>
-							<div class="form-group">
-								<label>Clock </label>
-								<input class="form-control" type="number" id="clock" name="quantum" value="1" disabled>
-							</div>
-
 							<div class="form-group">
 								<label>Quantum </label>
 								<input class="form-control" type="number" id="quantum" name="quantum" min="1" value="1">
