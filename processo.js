@@ -269,6 +269,10 @@ function selecionado(id){
 
 function pausarescalonamento(){
 	paraescalonamnto ++;
+
+	document.getElementById("botaoplay").disabled = false;
+	document.getElementById("botaopause").disabled = true;
+	document.getElementById("botaostop").disabled = false;
 }
 
 function pararescalonamento(){
@@ -297,6 +301,10 @@ function pararescalonamento(){
 	document.getElementById('tdcpu').innerHTML = '<br>';
 	document.getElementById('tdfilaprontos').innerHTML = '<br>';
 	document.getElementById('tdtam').innerHTML = '<br>';
+
+	document.getElementById("botaoplay").disabled = false;
+	document.getElementById("botaopause").disabled = true;
+	document.getElementById("botaostop").disabled = true;
 }
 
 function rodarescalonamento(){
@@ -309,6 +317,9 @@ function rodarescalonamento(){
 		alert("Crie processos");
 	}
 	else {
+		document.getElementById("botaoplay").disabled = true;
+		document.getElementById("botaopause").disabled = false;
+		document.getElementById("botaostop").disabled = false;
 		if (escalonamento == 1) {
 			
 			if (tempo == 0) {
