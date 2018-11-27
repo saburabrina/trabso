@@ -3,6 +3,7 @@ var pids = -1;
 var tempo = 0;
 turnaroundmedio = 0;
 escalonamento = 0;
+paraescalonamnto = 0;
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade) {
 	this.pid = pid,
@@ -47,6 +48,9 @@ function SJF(){
 		turnaroundmedio += processos[i].turnaround;
 	}
 	turnaroundmedio /= processos.length;
+
+	tempo = 0;
+
 	console.log("Turnaround médio: ",turnaroundmedio);
 	console.log(processos);
 
@@ -77,6 +81,9 @@ function FIFO(){
 		turnaroundmedio += processos[i].turnaround;
 	}
 	turnaroundmedio /= processos.length;
+
+	tempo = 0;
+
 	console.log("Turnaround médio :", turnaroundmedio);
 	console.log(processos);
 }
@@ -260,7 +267,41 @@ function selecionado(id){
 	}
 }
 
+function pausarescalonamento(){
+	paraescalonamnto ++;
+}
+
+function pararescalonamento(){
+	paraescalonamnto ++;
+
+	escalonamento = 0;
+	document.getElementById('infoescalonamento').innerHTML = "ND";
+	document.getElementById('sjfbtn').style.backgroundColor = "#66CDAA";
+	document.getElementById('sjfbtn').style.color = "#F0F8FF";
+	document.getElementById('edfbtn').style.backgroundColor = "#66CDAA";
+	document.getElementById('edfbtn').style.color = "#F0F8FF";
+	document.getElementById('fifobtn').style.backgroundColor = "#66CDAA";
+	document.getElementById('fifobtn').style.color = "#F0F8FF";
+	document.getElementById('priobtn').style.backgroundColor = "#66CDAA";
+	document.getElementById('priobtn').style.color = "#F0F8FF";
+	document.getElementById('rrbtn').style.backgroundColor = "#66CDAA";
+	document.getElementById('rrbtn').style.color = "#F0F8FF";
+
+	processos = [];
+	document.getElementById('tabelaprocessos').innerHTML = '';
+
+	tempo = 0;
+	document.getElementById('infotempo').innerHTML = tempo;
+
+	turnaroundmedio = 0;
+	document.getElementById('tdcpu').innerHTML = '<br>';
+	document.getElementById('tdfilaprontos').innerHTML = '<br>';
+	document.getElementById('tdtam').innerHTML = '<br>';
+}
+
 function rodarescalonamento(){
+	paraescalonamnto = 0;
+
 	if (escalonamento == 0) {
 		alert("Selecione um tipo de escalonamento");
 	}
@@ -269,29 +310,35 @@ function rodarescalonamento(){
 	}
 	else {
 		if (escalonamento == 1) {
-			SJF();
-			np();
+			
+			if (tempo == 0) {
+				aux = 0;
+				prontos = [];
+				SJF();
+			}
+			nptimer();
 		}
 
 		else if (escalonamento == 2) {
 
 		}
 		else if (escalonamento == 3) {
-			FIFO();
-			np();
-		}
-
-		function np(){
-			aux = 0;
-			prontos = [];
-			setInterval(nptimer, 1000);	
+			if (tempo == 0) {
+				aux = 0;
+				prontos = [];
+				FIFO();
+			}
+			nptimer();
 		}	
 	}
 }
 
 function nptimer(){
+	if (paraescalonamnto > 0) {
+		return;
+	}
 	for (var i = aux; i < processos.length; i++) {
-		if(processos[i].tempochegada = tempo){
+		if(processos[i].tempochegada == tempo){
 			prontos.push(processos[i]);
 		}
 	}
@@ -310,4 +357,5 @@ function nptimer(){
 	}
 	tempo++; 
 	document.getElementById('infotempo').innerHTML = tempo;
+	setTimeout(nptimer, 1000);
 }

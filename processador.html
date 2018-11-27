@@ -71,8 +71,14 @@
 			}
 
 			#tabelap {
-				height: 18em;
+				height: 17em;
 				overflow-y: auto;
+				width: 100%;
+			}
+
+			#tabelaescalonamento {
+				width: 100%;
+				overflow-x: auto;
 			}
 
 		</style>
@@ -128,7 +134,7 @@
 		<div class="main">
 			<div class="container">
 				<div class="row">
-					<div class=" p-1 col-5">
+					<div class="p-1 col-5">
 						<div id="tabelaescalonamento" class="card">
 							<table class="card-body" style="background-color:  #F0F8FF;">
 								<tr>
@@ -137,9 +143,9 @@
 									<th><strong style="margin: 1em;">Fila de prontos</strong></th>
 								</tr>
 								<tr>
-									<td id="tdcpu"></td>
-									<td id="tdtam"></td>
-									<td id="tdfilaprontos"></td>
+									<td id="tdcpu"> <br></td>
+									<td id="tdtam"> <br></td>
+									<td id="tdfilaprontos"> <br></td>
 								</tr>
 							</table>
 						</div>
@@ -155,6 +161,7 @@
 									</tr>
 								</thead>
 								<tbody id="tabelaprocessos">
+
 								</tbody>
 							</table>
 						</div>
