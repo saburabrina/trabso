@@ -6,6 +6,9 @@ escalonamento = 0;
 paraescalonamnto = 0;
 delay = 1000; // quantos milésimos de segundo vale o clock
 qtdexecutados = 0;
+prontos = [];
+aux = 0;
+executando = [];
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade) {
 	this.pid = pid,
@@ -75,7 +78,7 @@ function FIFO(){
 		return a.tempochegada - b.tempochegada;
 	})
 
-	tempo = processos[0].tempochegada;
+	/* tempo = processos[0].tempochegada;
 	for (var i = 0; i < processos.length; i++) {
 		tempo += processos[i].tempoexecucao;
 		processos[i].turnaround = tempo - processos[i].tempochegada;
@@ -83,7 +86,7 @@ function FIFO(){
 	}
 	turnaroundmedio /= processos.length;
 
-	tempo = 0;
+	tempo = 0; */
 
 	console.log(processos);
 }
@@ -293,6 +296,7 @@ function pararescalonamento(){
 	document.getElementById('rrbtn').style.color = "#F0F8FF";
 
 	processos = [];
+	prontos = [];
 	document.getElementById('tabelaprocessos').innerHTML = '';
 
 	tempo = 0;
@@ -308,6 +312,7 @@ function pararescalonamento(){
 	document.getElementById("botaostop").disabled = true;
 
 	qtdexecutados = 0;
+	aux = 0;
 }
 
 function rodarescalonamento(){
@@ -323,34 +328,24 @@ function rodarescalonamento(){
 		document.getElementById("botaoplay").disabled = true;
 		document.getElementById("botaopause").disabled = false;
 		document.getElementById("botaostop").disabled = false;
-		if (escalonamento == 1) {
-			
-			if (tempo == 0) {
-				aux = 0;
-				prontos = [];
-				SJF();
-			}
+		if (escalonamento == 1 || escalonamento == 3) {
+			FIFO();
 			nptimer();
 		}
 
 		else if (escalonamento == 2) {
 
-		}
-		else if (escalonamento == 3) {
-			if (tempo == 0) {
-				aux = 0;
-				prontos = [];
-				FIFO();
-			}
-			nptimer();
 		}	
 	}
 }
 
 function nptimer(){ // para não preemptivos
+	document.getElementById('infotempo').innerHTML = tempo;
+
 	if (paraescalonamnto > 0) {
 		return;
 	}
+
 	for (var i = aux; i < processos.length; i++) {
 			
 		if(processos[i].tempochegada == tempo){
@@ -362,29 +357,46 @@ function nptimer(){ // para não preemptivos
 		}
 	}
 	aux = i;
-	if(prontos.length > 0){
-		console.log("Processo ", prontos[0].pid, " executando no tempo ", tempo);
-		document.getElementById('tdcpu').innerHTML = prontos[0].pid;
+
+	if (escalonamento == 1) {
+		prontos.sort(function(a, b){ return a.tempoexecucao - b.tempoexecucao; })
+	}
+
+	if (executando.length == 0) {
+		if(prontos.length > 0){
+			executando.push(prontos[0]);
+			prontos.splice(0, 1);
+		}
+		else {
+			document.getElementById('tdcpu').innerHTML = '';
+			console.log("Fila de prontos vazia no tempo ", tempo);
+
+			if(qtdexecutados == processos.length){
+				document.getElementById('tdtam').innerHTML = turnaroundmedio;
+			}
+		}
+	}
+
+	if(executando.length == 1){
+
+		console.log("Processo ", executando[0].pid, " executando no tempo ", tempo);
+		document.getElementById('tdcpu').innerHTML = executando[0].pid;
 		document.getElementById('tdfilaprontos').innerHTML = '';
-		for (var i = 1; i < prontos.length; i++) {
+		for (var i = 0; i < prontos.length; i++) {
 			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
 		}
-		prontos[0].tempoexecucao --;
-		if (prontos[0].tempoexecucao == 0) {
-			console.log("Processo ", prontos[0].pid, " terminou de executar no tempo ", tempo+1);
-			prontos.splice(0, 1);
+
+		executando[0].tempoexecucao --;
+		if (executando[0].tempoexecucao == 0) {
+			console.log("Processo ", executando[0].pid, " terminou de executar no tempo ", tempo + 1);
+			executando[0].turnaround = tempo + 1 - executando[0].tempochegada;
+			executando[0].turnaround /= processos.length;
+			turnaroundmedio += executando[0].turnaround;
+			executando.splice(0, 1);
 			qtdexecutados++;
 		}
 	}
-	else{
-		document.getElementById('tdcpu').innerHTML = '';
-		console.log("Fila de prontos vazia no tempo ", tempo);
-		if(qtdexecutados == processos.length){
-			document.getElementById('tdtam').innerHTML = turnaroundmedio;
-		}
-	}
-		
+
 	tempo++; 
-	document.getElementById('infotempo').innerHTML = tempo;
 	setTimeout(nptimer, delay);
 }
