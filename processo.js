@@ -1,9 +1,11 @@
 var processos = [];
 var pids = -1;
-var tempo = 0;
+var tempo = 0; // do clock
 turnaroundmedio = 0;
 escalonamento = 0;
 paraescalonamnto = 0;
+delay = 1000; // quantos milésimos de segundo vale o clock
+qtdexecutados = 0;
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade) {
 	this.pid = pid,
@@ -51,7 +53,6 @@ function SJF(){
 
 	tempo = 0;
 
-	console.log("Turnaround médio: ",turnaroundmedio);
 	console.log(processos);
 
 }
@@ -84,7 +85,6 @@ function FIFO(){
 
 	tempo = 0;
 
-	console.log("Turnaround médio :", turnaroundmedio);
 	console.log(processos);
 }
 
@@ -176,6 +176,7 @@ function preempcao(){
 function savechanges(){
 	document.getElementById('infoquantum').innerHTML = document.getElementById('quantum').value;
 	document.getElementById('infosobrecarga').innerHTML = document.getElementById('sobrecarga').value;
+	delay = document.getElementById('clock').value * 1000;
 
 	if (escalonamento == 1) { document.getElementById('infoescalonamento').innerHTML = "SJF";}
 	else if (escalonamento == 2) { document.getElementById('infoescalonamento').innerHTML = "EDF";}
@@ -305,6 +306,8 @@ function pararescalonamento(){
 	document.getElementById("botaoplay").disabled = false;
 	document.getElementById("botaopause").disabled = true;
 	document.getElementById("botaostop").disabled = true;
+
+	qtdexecutados = 0;
 }
 
 function rodarescalonamento(){
@@ -344,29 +347,44 @@ function rodarescalonamento(){
 	}
 }
 
-function nptimer(){
+function nptimer(){ // para não preemptivos
 	if (paraescalonamnto > 0) {
 		return;
 	}
 	for (var i = aux; i < processos.length; i++) {
+			
 		if(processos[i].tempochegada == tempo){
 			prontos.push(processos[i]);
+			console.log("Processo ", prontos[prontos.length-1].pid, " com tempochegada ", prontos[prontos.length-1].tempochegada, " entrou na fila de prontos no tempo ", tempo);
+		}
+		else {
+			break;
 		}
 	}
 	aux = i;
 	if(prontos.length > 0){
+		console.log("Processo ", prontos[0].pid, " executando no tempo ", tempo);
 		document.getElementById('tdcpu').innerHTML = prontos[0].pid;
 		document.getElementById('tdfilaprontos').innerHTML = '';
 		for (var i = 1; i < prontos.length; i++) {
 			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
 		}
-		prontos.splice(0, 1);
+		prontos[0].tempoexecucao --;
+		if (prontos[0].tempoexecucao == 0) {
+			console.log("Processo ", prontos[0].pid, " terminou de executar no tempo ", tempo+1);
+			prontos.splice(0, 1);
+			qtdexecutados++;
+		}
 	}
 	else{
 		document.getElementById('tdcpu').innerHTML = '';
-		document.getElementById('tdtam').innerHTML = turnaroundmedio;
+		console.log("Fila de prontos vazia no tempo ", tempo);
+		if(qtdexecutados == processos.length){
+			document.getElementById('tdtam').innerHTML = turnaroundmedio;
+		}
 	}
+		
 	tempo++; 
 	document.getElementById('infotempo').innerHTML = tempo;
-	setTimeout(nptimer, 1000);
+	setTimeout(nptimer, delay);
 }

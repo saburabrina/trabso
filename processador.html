@@ -94,7 +94,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="text-center justify-content-center col-4" style="font-size: 0.7em;">
-						<strong> Tempo </strong>
+						<strong> Clock </strong>
 						<p id="infotempo">0</p>
 					</div>
 					<div class="text-center justify-content-center col-4" style="font-size: 0.7em;">
@@ -196,7 +196,7 @@
 								<label>Prioridade</label>
 								<input class="form-control" type="number" id="prioridade" name="prioridade" min=-19 max=19 value=0>
 							</div>
-							<span class="text-danger"> *</span><sub>tempo em segundos</sub>
+							<span class="text-danger"> *</span><sub>tempo em ciclos de clock</sub>
 						</form>
 					</div>
 					<div class="modal-footer text-center justify-content-center">
@@ -216,15 +216,23 @@
 					<div class="modal-body">
 						<form>
 							<div class="form-group">
+								<label>Clock </label>
+								<input class="form-control" type="number" id="clock" name="clock" min="1" value="1">
+								<span class="text-danger"> *</span><sub>em segundos</sub>
+							</div>
+
+							<div class="form-group">
 								<label>Quantum </label>
 								<input class="form-control" type="number" id="quantum" name="quantum" min="1" value="1">
+								<span class="text-danger"> *</span><sub>em ciclos de clock</sub>
 							</div>
 
 							<div class="form-group">
 								<label>Sobrecarga </label>
 								<input class="form-control" type="number" id="sobrecarga" min="1" name="sobrecarga" value="1">
+								<span class="text-danger"> *</span><sub>em ciclos de clock</sub>
 							</div>
-							<span class="text-danger"> *</span><sub>em segundos</sub>	
+								
 						</form>
 					</div>
 					<div class="modal-footer text-center justify-content-center">
