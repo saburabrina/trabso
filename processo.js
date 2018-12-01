@@ -8,14 +8,17 @@ delay = 1000; // quantos milésimos de segundo vale o clock
 qtdexecutados = 0;
 prontos = [];
 aux = 0;
+var xua;
 executando = [];
+quantumctrl = 0;
+sobrecargactrl = false;
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade) {
 	this.pid = pid,
 	this.tempochegada = tempochegada,
 	this.tempoexecucao = tempoexecucao,
-	this.deadline = deadline
-	this.turnaround = 0;
+	this.deadline = deadline,
+	this.turnaround = 0,
 	this.prioridade = prioridade;
 };
 
@@ -34,29 +37,13 @@ function criarprocesso(){
 
 	function criarprocessofront(){
 		document.getElementById('tabelaprocessos').innerHTML += '<tr><td headers="tdpid">' + pids + '</td><td headers="tdtc">' + tempochegada + '</td><td headers="tdte">' + tempoexecucao + '</td><td headers="tdd">' + deadline + '</td><td headers="tdp">' + prioridade + '</td></tr><br>';
+		document.getElementById('divGrafico').innerHTML += '<div id="' + pids + '" class="m-1 row">' + pids + '</div>';
 	}
 }
 
 function SJF(){
 
-	processos.sort(function(a, b){
-		if(a.tempochegada!=b.tempochegada){
-			return a.tempochegada - b.tempochegada;
-		}
-		return a.tempoexecucao - b.tempoexecucao;
-	})
-
-	tempo = processos[0].tempochegada;
-	for (var i = 0; i < processos.length; i++) {
-		tempo += processos[i].tempoexecucao;
-		processos[i].turnaround = tempo - processos[i].tempochegada;
-		turnaroundmedio += processos[i].turnaround;
-	}
-	turnaroundmedio /= processos.length;
-
-	tempo = 0;
-
-	console.log(processos);
+	// implementado na função nptimer()
 
 }
 
@@ -69,8 +56,6 @@ function EDF(){
 	})
 
 	console.log(processos);
-
-	preempcao();
 }
 
 function FIFO(){
@@ -78,27 +63,13 @@ function FIFO(){
 		return a.tempochegada - b.tempochegada;
 	})
 
-	/* tempo = processos[0].tempochegada;
-	for (var i = 0; i < processos.length; i++) {
-		tempo += processos[i].tempoexecucao;
-		processos[i].turnaround = tempo - processos[i].tempochegada;
-		turnaroundmedio += processos[i].turnaround;
-	}
-	turnaroundmedio /= processos.length;
-
-	tempo = 0; */
-
 	console.log(processos);
 }
 
 function RR(){
-	processos.sort(function(a, b){ // fifo
-		return a.tempochegada - b.tempochegada;
-	})
+	
+	// implementado na função ptimer()
 
-	console.log(processos);
-
-	preempcao();
 }
 
 function Prioridade(){
@@ -110,70 +81,6 @@ function Prioridade(){
 	})
 
 	console.log(processos);
-
-	preempcao();
-}
-
-function preempcao(){
-
-
-	quantum = document.getElementById('quantum').value - 0;
-	sobrecarga = document.getElementById('sobrecarga').value - 0;
-	ta = 0;
-	qtdterminados = 0;
-	prontos = [];
-	aux = 0;
-
-	while(processos.length > qtdterminados){
-		atualizaprontos();
-		if(prontos.length > 0){ 
-			console.log("O processo na frente da lista é o processo ", prontos[0].pid, " e o tempo atual é ", tempo);
-
-			if (prontos[0].tempoexecucao > quantum) { // se o processo for executar e voltar pra fila de prontos
-				
-				tempo += quantum;
-				tempo += sobrecarga;
-				atualizaprontos();
-				
-				prontos[0].tempoexecucao -= quantum; // atualizar o tempo de execucao do processo e colocar ele de volta na fila
-				prontos.push(prontos[0]);
-				prontos.splice(0, 1);
-				console.log("O processo ", prontos[prontos.length-1].pid, " agora ocupa a posição ", prontos.length-1, " da fila");
-			}
-			else {  // se o processo for executar e parar
-				tempo += prontos[0].tempoexecucao;
-				atualizaprontos();
-
-				prontos[0].turnaround += tempo - prontos[0].tempochegada;
-				console.log("O processo ", prontos[0].pid, " terminou com turnaround de ", prontos[0].turnaround, " e agora vai sair da fila no tempo " + tempo);
-
-				document.getElementById('tabela').innerHTML += '<tr><td>' + prontos[0].pid + '</td><td>' + prontos[0].turnaround + '</td></tr>';
-				ta += prontos[0].turnaround;
-				prontos.splice(0, 1);
-				qtdterminados++;
-			}
-
-		}
-		else{
-			tempo++;
-		}
-	}
-	ta /= processos.length;
-	turnaroundmedio = ta;
-
-
-	function atualizaprontos(){
-		for (var i = aux; i < processos.length; i++) {
-			if(processos[i].tempochegada <= tempo) {
-				prontos.push(processos[i]);
-				console.log(prontos);
-			}
-			else{
-				break;
-			}
-		}
-		aux = i;
-	}	
 }
 
 function savechanges(){
@@ -298,6 +205,7 @@ function pararescalonamento(){
 	processos = [];
 	prontos = [];
 	document.getElementById('tabelaprocessos').innerHTML = '';
+	document.getElementById('divGrafico').innerHTML = '';
 
 	tempo = 0;
 	document.getElementById('infotempo').innerHTML = tempo;
@@ -313,6 +221,8 @@ function pararescalonamento(){
 
 	qtdexecutados = 0;
 	aux = 0;
+	quantumctrl = 0;
+	sobrecargactrl = 0;
 }
 
 function rodarescalonamento(){
@@ -328,13 +238,20 @@ function rodarescalonamento(){
 		document.getElementById("botaoplay").disabled = true;
 		document.getElementById("botaopause").disabled = false;
 		document.getElementById("botaostop").disabled = false;
+
+		FIFO();
+
 		if (escalonamento == 1 || escalonamento == 3) {
-			FIFO();
 			nptimer();
 		}
 
-		else if (escalonamento == 2) {
+		else {
+			quantum = document.getElementById('quantum').value - 0;
+			sobrecarga = document.getElementById('sobrecarga').value - 0;
+			quantumctrl = 0;
+			sobrecargactrl = 0;
 
+			ptimer();
 		}	
 	}
 }
@@ -357,6 +274,10 @@ function nptimer(){ // para não preemptivos
 		}
 	}
 	aux = i;
+
+	for (var i = aux; i < processos.length; i++) {
+		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
+	}
 
 	if (escalonamento == 1) {
 		prontos.sort(function(a, b){ return a.tempoexecucao - b.tempoexecucao; })
@@ -381,9 +302,11 @@ function nptimer(){ // para não preemptivos
 
 		console.log("Processo ", executando[0].pid, " executando no tempo ", tempo);
 		document.getElementById('tdcpu').innerHTML = executando[0].pid;
+		document.getElementById(executando[0].pid).innerHTML += '<i style="color: #00FF00" class="fas fa-square"></i>'
 		document.getElementById('tdfilaprontos').innerHTML = '';
 		for (var i = 0; i < prontos.length; i++) {
 			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
+			document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
 		}
 
 		executando[0].tempoexecucao --;
@@ -399,4 +322,117 @@ function nptimer(){ // para não preemptivos
 
 	tempo++; 
 	setTimeout(nptimer, delay);
+}
+
+function ptimer(){ // para preemptivos
+	document.getElementById('infotempo').innerHTML = tempo;
+
+	if (paraescalonamnto > 0) {
+		return;
+	}
+
+	for (var i = aux; i < processos.length; i++) {
+			
+		if(processos[i].tempochegada == tempo){
+			prontos.push(processos[i]);
+			console.log("Processo ", prontos[prontos.length-1].pid, " com tempochegada ", prontos[prontos.length-1].tempochegada, " entrou na fila de prontos no tempo ", tempo);
+		}
+		else {
+			break;
+		}
+	}
+	aux = i;
+
+	for (var i = aux; i < processos.length; i++) {
+		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
+	}
+
+	if (escalonamento == 2) { // edf
+		prontos.sort(function(a, b){ return a.deadline - b.deadline; }) 
+	}
+	else if (escalonamento == 5) { // prioridade
+		prontos.sort(function(a, b){ return a.prioridade - b.prioridade; }) 
+	}
+
+	if (executando.length == 0) {
+		if (sobrecargactrl == true) {
+			if (sobrecarga == 0) {
+				sobrecargactrl = false;
+				sobrecarga = document.getElementById('sobrecarga').value - 0;
+
+				prontos.push(xua);
+				executando.push(prontos[0]);
+				prontos.splice(0, 1);
+
+				if (escalonamento == 2) { // edf
+					prontos.sort(function(a, b){ return a.deadline - b.deadline; }) 
+				}
+				else if (escalonamento == 5) { // prioridade
+					prontos.sort(function(a, b){ return a.prioridade - b.prioridade; }) 
+				}
+
+			}
+			else {
+				sobrecarga --;
+				console.log("Sobrecarga no tempo ", tempo);
+				document.getElementById('tdcpu').innerHTML = "S";
+				document.getElementById('tdfilaprontos').innerHTML = '';
+				document.getElementById(xua.pid).innerHTML += '<i style="color: #FF0000" class="fas fa-square"></i>'
+				for (var i = 0; i < prontos.length; i++) {
+					document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
+					document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
+				}
+			}
+		}
+		else {
+			if(prontos.length > 0){
+				executando.push(prontos[0]);
+				prontos.splice(0, 1);
+			}
+			else {
+				document.getElementById('tdcpu').innerHTML = '';
+				console.log("Fila de prontos vazia no tempo ", tempo);
+
+				if(qtdexecutados == processos.length){
+					document.getElementById('tdtam').innerHTML = turnaroundmedio;
+				}
+			}
+		}
+	}
+
+	if(executando.length == 1){
+
+		console.log("Processo ", executando[0].pid, " executando no tempo ", tempo);
+		document.getElementById('tdcpu').innerHTML = executando[0].pid;
+		document.getElementById(executando[0].pid).innerHTML += '<i style="color: #00FF00" class="fas fa-square"></i>'
+
+		document.getElementById('tdfilaprontos').innerHTML = '';
+		for (var i = 0; i < prontos.length; i++) {
+			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
+			document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
+		}
+
+		executando[0].tempoexecucao --;
+		quantumctrl++;
+		if (executando[0].tempoexecucao == 0) {
+			
+			console.log("Processo ", executando[0].pid, " terminou de executar no tempo ", tempo + 1);
+			executando[0].turnaround = tempo + 1 - executando[0].tempochegada;
+			executando[0].turnaround /= processos.length;
+			turnaroundmedio += executando[0].turnaround;
+			executando.splice(0, 1);
+			qtdexecutados++;
+			quantumctrl = 0;
+		}
+		else if (quantumctrl == quantum) {
+			sobrecargactrl = true;
+			xua = executando[0];
+			executando.splice(0, 1);
+			quantumctrl = 0;
+		}
+
+	}
+
+	tempo++; 
+	setTimeout(ptimer, delay);
 }
