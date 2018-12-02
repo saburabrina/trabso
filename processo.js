@@ -12,6 +12,12 @@ var xua;
 executando = [];
 quantumctrl = 0;
 sobrecargactrl = false;
+disco = [];
+celulasram = ["a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9",
+			"b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9",
+			"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9",
+			"d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9",
+			"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9" ]
 
 var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade) {
 	this.pid = pid,
@@ -19,7 +25,17 @@ var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade)
 	this.tempoexecucao = tempoexecucao,
 	this.deadline = deadline,
 	this.turnaround = 0,
-	this.prioridade = prioridade;
+	this.prioridade = prioridade,
+	this.cor = gera_cor();
+
+	function gera_cor() {
+	    var hexadecimais = '0123456789ABCDEF';
+	    var cor = '#';
+	    for (var i = 0; i < 6; i++ ) {
+	        cor += hexadecimais[Math.floor(Math.random() * 16)];
+	    }
+	    return cor;
+	}
 };
 
 function criarprocesso(){
@@ -38,46 +54,14 @@ function criarprocesso(){
 	function criarprocessofront(){
 		document.getElementById('tabelaprocessos').innerHTML += '<tr><td headers="tdpid">' + pids + '</td><td headers="tdtc">' + tempochegada + '</td><td headers="tdte">' + tempoexecucao + '</td><td headers="tdd">' + deadline + '</td><td headers="tdp">' + prioridade + '</td></tr><br>';
 		document.getElementById('divGrafico').innerHTML += '<div id="' + pids + '" class="m-1 row">' + pids + '</div>';
+		document.getElementById('corpo').innerHTML += '<tr><td><i style="color: ' + processo.cor + ';" class="fas fa-circle"></i></td><td>'+ pids +'</td></tr>';
 	}
 }
 
-function SJF(){
-
-	// implementado na função nptimer()
-
-}
-
-function EDF(){
-	processos.sort(function(a, b){
-		if(a.tempochegada!=b.tempochegada){
-			return a.tempochegada - b.tempochegada;
-		}
-		return a.deadline - b.deadline;
-	})
-
-	console.log(processos);
-}
 
 function FIFO(){
 	processos.sort(function(a, b){
 		return a.tempochegada - b.tempochegada;
-	})
-
-	console.log(processos);
-}
-
-function RR(){
-	
-	// implementado na função ptimer()
-
-}
-
-function Prioridade(){
-	processos.sort(function(a, b){
-		if(a.tempochegada!=b.tempochegada){
-			return a.tempochegada - b.tempochegada;
-		}
-		return a.prioridade - b.prioridade;
 	})
 
 	console.log(processos);
@@ -264,16 +248,39 @@ function nptimer(){ // para não preemptivos
 	}
 
 	for (var i = aux; i < processos.length; i++) {
-			
 		if(processos[i].tempochegada == tempo){
 			prontos.push(processos[i]);
 			console.log("Processo ", prontos[prontos.length-1].pid, " com tempochegada ", prontos[prontos.length-1].tempochegada, " entrou na fila de prontos no tempo ", tempo);
+
+			counter = 7;
+			for(var j = 0; j < celulasram.length; j++){ // first fit
+				if (document.getElementById(celulasram[j]).style.visibility == "hidden") {
+					document.getElementById(celulasram[j]).style.visibility = "visible";
+					document.getElementById(celulasram[j]).style.color = processos[i].cor;
+					counter--;
+				}
+				if (counter==0) {
+					break;
+				}
+			}
+			if (counter!=0) {
+				for (var k = 0; k < counter; k++) {
+					disco.push(processos[i]);
+				}
+			}
+
 		}
 		else {
 			break;
 		}
 	}
 	aux = i;
+
+	document.getElementById('disco').innerHTML = '<tr>'
+	for (var i = 0; i < disco.length; i++) {
+		document.getElementById('disco').innerHTML += '<td>'+ disco[i].pid + '</td>';
+	}
+	document.getElementById('disco').innerHTML += '</tr>';
 
 	for (var i = aux; i < processos.length; i++) {
 		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
@@ -336,12 +343,35 @@ function ptimer(){ // para preemptivos
 		if(processos[i].tempochegada == tempo){
 			prontos.push(processos[i]);
 			console.log("Processo ", prontos[prontos.length-1].pid, " com tempochegada ", prontos[prontos.length-1].tempochegada, " entrou na fila de prontos no tempo ", tempo);
+
+			counter = 7;
+			for(var j = 0; j < celulasram.length; j++){ // first fit
+				if (document.getElementById(celulasram[j]).style.visibility == "hidden") {
+					document.getElementById(celulasram[j]).style.visibility = "visible";
+					document.getElementById(celulasram[j]).style.color = processos[i].cor;
+					counter--;
+				}
+				if (counter==0) {
+					break;
+				}
+			}
+			if (counter!=0) {
+				for (var k = 0; k < counter; k++) {
+					disco.push(processos[i]);
+				}
+			}
 		}
 		else {
 			break;
 		}
 	}
 	aux = i;
+
+	document.getElementById('disco').innerHTML = '<tr>'
+	for (var i = 0; i < disco.length; i++) {
+		document.getElementById('disco').innerHTML += '<td>'+ disco[i].pid + '</td>';
+	}
+	document.getElementById('disco').innerHTML += '</tr>';
 
 	for (var i = aux; i < processos.length; i++) {
 		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
