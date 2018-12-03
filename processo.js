@@ -10,6 +10,7 @@ prontos = [];
 aux = 0;
 var xua;
 executando = [];
+ram = [];
 quantumctrl = 0;
 sobrecargactrl = false;
 disco = [];
@@ -28,6 +29,8 @@ var Processo = function (pid, tempochegada, tempoexecucao, deadline, prioridade)
 	this.turnaround = 0,
 	this.prioridade = prioridade,
 	this.cor = gera_cor();
+	this.chegadaram;
+	this.frequencia = 0;
 
 	function gera_cor() {
 	    var hexadecimais = '0123456789ABCDEF';
@@ -59,7 +62,6 @@ function criarprocesso(){
 	}
 }
 
-
 function FIFO(){
 	processos.sort(function(a, b){
 		return a.tempochegada - b.tempochegada;
@@ -67,6 +69,8 @@ function FIFO(){
 
 	console.log(processos);
 }
+
+
 
 function savechanges(){
 	document.getElementById('infoquantum').innerHTML = document.getElementById('quantum').value;
@@ -219,6 +223,9 @@ function rodarescalonamento(){
 	else if (processos.length == 0) {
 		alert("Crie processos");
 	}
+	else if(escmemoria == 0){
+		alert("Selecione um escalonamento de memória");
+	}
 	else {
 		document.getElementById("botaoplay").disabled = true;
 		document.getElementById("botaopause").disabled = false;
@@ -256,6 +263,9 @@ function nptimer(){ // para não preemptivos
 			counter = 7;
 			for(var j = 0; j < celulasram.length; j++){ // first fit
 				if (document.getElementById(celulasram[j]).style.visibility == "hidden") {
+					prontos[prontos.length-1].chegadaram = tempo;
+
+					ram.push(prontos[prontos.length-1]);
 					document.getElementById(celulasram[j]).style.visibility = "visible";
 					document.getElementById(celulasram[j]).style.color = processos[i].cor;
 					document.getElementById('memvirtual').innerHTML += '<td>' + j + '</td>';
@@ -293,10 +303,88 @@ function nptimer(){ // para não preemptivos
 		prontos.sort(function(a, b){ return a.tempoexecucao - b.tempoexecucao; })
 	}
 
+	var valid = false;
 	if (executando.length == 0) {
 		if(prontos.length > 0){
+
+			while(!valid){
+				var counter = 0;
+				let help = document.getElementById('memvirtual');
+				helper = help.getElementsByTagName('td');
+				vectorpositions = [];
+				vectorpositions2 = [];
+				meh = prontos[0].pid * 7;
+
+				for(var k = prontos[0].pid * 7; k < prontos[0].pid*7 + 7; k++){
+					if(helper[k].innerHTML == 'i'){
+						counter++;
+						vectorpositions2.push(k);
+						if (counter==1) {
+							prontos.push(prontos[0]);
+							prontos.splice(0,1);
+
+							if (escmemoria == 1) {
+								menor = 1000;
+								idao;
+								for (var i = 0; i < ram.length; i++) {
+									if(ram[i].chegadaram <= menor){
+										if (menor == 1000) {
+											idao = ram[i].pid;
+											vectorpositions.push(i);
+										}
+										else if (idao == ram[i].pid) {
+											vectorpositions.push(i);
+										}
+										else{
+											idao = ram[i].pid;
+											vectorpositions = [];
+											vectorpositions.push(i);
+										}
+
+										menor = ram[i].chegadaram;
+									}
+								}
+							} 
+							else {
+
+							}
+
+							let help2 = document.getElementById('disco');
+							let helper2 = help2.getElementsByTagName('td');
+							for(var j = 0; j < disco.length; j++){
+								if(disco[j].pid == prontos[prontos.length-1].pid){
+									disco.splice(j,1);
+									console.log(disco[j]);
+									j--;
+								}
+							}
+						}
+					}
+				}
+
+				if(counter > 0){
+					valid = true;
+				}
+				else {
+					meh = 0;
+					for (var i = 0; i < vectorpositions.length; i++) {
+						if(counter > 0){
+							document.getElementById(celulasram[vectorpositions[i]]).style.color = prontos[0].cor;
+							helper[vectorpositions2[meh]].innerHTML = vectorpositions[i];
+							meh++;
+							counter--;
+						}
+						else{
+							document.getElementById(celulasram[i]).style.visibility = hidden;
+						}
+					}
+				}
+			}
+
+
 			executando.push(prontos[0]);
 			prontos.splice(0, 1);
+			executando[0].frequencia++;
 		}
 		else {
 			document.getElementById('tdcpu').innerHTML = '';
