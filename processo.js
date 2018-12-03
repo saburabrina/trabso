@@ -13,6 +13,7 @@ executando = [];
 quantumctrl = 0;
 sobrecargactrl = false;
 disco = [];
+escmemoria = 1;
 celulasram = ["a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9",
 			"b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9",
 			"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9",
@@ -53,7 +54,7 @@ function criarprocesso(){
 
 	function criarprocessofront(){
 		document.getElementById('tabelaprocessos').innerHTML += '<tr><td headers="tdpid">' + pids + '</td><td headers="tdtc">' + tempochegada + '</td><td headers="tdte">' + tempoexecucao + '</td><td headers="tdd">' + deadline + '</td><td headers="tdp">' + prioridade + '</td></tr><br>';
-		document.getElementById('divGrafico').innerHTML += '<div id="' + pids + '" class="m-1 row">' + pids + '</div>';
+		document.getElementById('divGrafico').innerHTML += '<div id="' + pids + '" class="m-1 row"><div class="col-1">' + pids + '</div></div>';
 		document.getElementById('corpo').innerHTML += '<tr><td><i style="color: ' + processo.cor + ';" class="fas fa-circle"></i></td><td>'+ pids +'</td></tr>';
 	}
 }
@@ -257,6 +258,7 @@ function nptimer(){ // para não preemptivos
 				if (document.getElementById(celulasram[j]).style.visibility == "hidden") {
 					document.getElementById(celulasram[j]).style.visibility = "visible";
 					document.getElementById(celulasram[j]).style.color = processos[i].cor;
+					document.getElementById('memvirtual').innerHTML += '<td>' + j + '</td>';
 					counter--;
 				}
 				if (counter==0) {
@@ -266,6 +268,8 @@ function nptimer(){ // para não preemptivos
 			if (counter!=0) {
 				for (var k = 0; k < counter; k++) {
 					disco.push(processos[i]);
+					document.getElementById('memvirtual').innerHTML += '<td>i</td>';
+
 				}
 			}
 
@@ -276,11 +280,10 @@ function nptimer(){ // para não preemptivos
 	}
 	aux = i;
 
-	document.getElementById('disco').innerHTML = '<tr>'
+	document.getElementById('disco').innerHTML = ''
 	for (var i = 0; i < disco.length; i++) {
 		document.getElementById('disco').innerHTML += '<td>'+ disco[i].pid + '</td>';
 	}
-	document.getElementById('disco').innerHTML += '</tr>';
 
 	for (var i = aux; i < processos.length; i++) {
 		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
@@ -308,6 +311,8 @@ function nptimer(){ // para não preemptivos
 	if(executando.length == 1){
 
 		console.log("Processo ", executando[0].pid, " executando no tempo ", tempo);
+
+
 		document.getElementById('tdcpu').innerHTML = executando[0].pid;
 		document.getElementById(executando[0].pid).innerHTML += '<i style="color: #00FF00" class="fas fa-square"></i>'
 		document.getElementById('tdfilaprontos').innerHTML = '';
@@ -349,6 +354,7 @@ function ptimer(){ // para preemptivos
 				if (document.getElementById(celulasram[j]).style.visibility == "hidden") {
 					document.getElementById(celulasram[j]).style.visibility = "visible";
 					document.getElementById(celulasram[j]).style.color = processos[i].cor;
+					document.getElementById('memvirtual').innerHTML += '<td>' + j + '</td>';
 					counter--;
 				}
 				if (counter==0) {
@@ -358,6 +364,7 @@ function ptimer(){ // para preemptivos
 			if (counter!=0) {
 				for (var k = 0; k < counter; k++) {
 					disco.push(processos[i]);
+					document.getElementById('memvirtual').innerHTML += '<td>i</td>';
 				}
 			}
 		}
