@@ -54,7 +54,7 @@ function criarprocesso(){
 
 	function criarprocessofront(){
 		document.getElementById('tabelaprocessos').innerHTML += '<tr><td headers="tdpid">' + pids + '</td><td headers="tdtc">' + tempochegada + '</td><td headers="tdte">' + tempoexecucao + '</td><td headers="tdd">' + deadline + '</td><td headers="tdp">' + prioridade + '</td></tr><br>';
-		document.getElementById('divGrafico').innerHTML += '<div id="' + pids + '" class="m-1 row"><div class="col-1">' + pids + '</div></div>';
+		document.getElementById('divGrafico').innerHTML += '<tr id="' + pids + '" class="m-1"><td>' + pids + '</td></tr>';
 		document.getElementById('corpo').innerHTML += '<tr><td><i style="color: ' + processo.cor + ';" class="fas fa-circle"></i></td><td>'+ pids +'</td></tr>';
 	}
 }
@@ -286,7 +286,7 @@ function nptimer(){ // para não preemptivos
 	}
 
 	for (var i = aux; i < processos.length; i++) {
-		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
+		document.getElementById(processos[i].pid).innerHTML += '<td><i style="color: #F0F8FF" class="fas fa-square"></i></td>'
 	}
 
 	if (escalonamento == 1) {
@@ -314,11 +314,11 @@ function nptimer(){ // para não preemptivos
 
 
 		document.getElementById('tdcpu').innerHTML = executando[0].pid;
-		document.getElementById(executando[0].pid).innerHTML += '<i style="color: #00FF00" class="fas fa-square"></i>'
+		document.getElementById(executando[0].pid).innerHTML += '<td><i style="color: #00FF00" class="fas fa-square"></i></td>'
 		document.getElementById('tdfilaprontos').innerHTML = '';
 		for (var i = 0; i < prontos.length; i++) {
 			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
-			document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
+			document.getElementById(prontos[i].pid).innerHTML += '<td><i style="color: #FFFF00" class="fas fa-square"></i></td>'
 		}
 
 		executando[0].tempoexecucao --;
@@ -381,7 +381,7 @@ function ptimer(){ // para preemptivos
 	document.getElementById('disco').innerHTML += '</tr>';
 
 	for (var i = aux; i < processos.length; i++) {
-		document.getElementById(processos[i].pid).innerHTML += '<i style="color: #F0F8FF" class="fas fa-square"></i>'
+		document.getElementById(processos[i].pid).innerHTML += '<td><i style="color: #F0F8FF" class="fas fa-square"></i></td>'
 	}
 
 	if (escalonamento == 2) { // edf
@@ -414,10 +414,10 @@ function ptimer(){ // para preemptivos
 				console.log("Sobrecarga no tempo ", tempo);
 				document.getElementById('tdcpu').innerHTML = "S";
 				document.getElementById('tdfilaprontos').innerHTML = '';
-				document.getElementById(xua.pid).innerHTML += '<i style="color: #FF0000" class="fas fa-square"></i>'
+				document.getElementById(xua.pid).innerHTML += '<td><i style="color: #FF0000" class="fas fa-square"></i></td>'
 				for (var i = 0; i < prontos.length; i++) {
 					document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
-					document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
+					document.getElementById(prontos[i].pid).innerHTML += '<td><i style="color: #FFFF00" class="fas fa-square"></i></td>'
 				}
 			}
 		}
@@ -441,12 +441,12 @@ function ptimer(){ // para preemptivos
 
 		console.log("Processo ", executando[0].pid, " executando no tempo ", tempo);
 		document.getElementById('tdcpu').innerHTML = executando[0].pid;
-		document.getElementById(executando[0].pid).innerHTML += '<i style="color: #00FF00" class="fas fa-square"></i>'
+		document.getElementById(executando[0].pid).innerHTML += '<td><i style="color: #00FF00" class="fas fa-square"></i></td>'
 
 		document.getElementById('tdfilaprontos').innerHTML = '';
 		for (var i = 0; i < prontos.length; i++) {
 			document.getElementById('tdfilaprontos').innerHTML += prontos[i].pid + ' ';
-			document.getElementById(prontos[i].pid).innerHTML += '<i style="color: #FFFF00" class="fas fa-square"></i>'
+			document.getElementById(prontos[i].pid).innerHTML += '<td><i style="color: #FFFF00" class="fas fa-square"></i></td>'
 		}
 
 		executando[0].tempoexecucao --;
